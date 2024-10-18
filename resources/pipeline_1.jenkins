@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: 'https://github.com/e-makarenko/CI_CD_repository.git', branch: 'main'
+            }
+        }
+
+        stage('Setup Python Environment') {
+            steps {
+                echo 'Setting up Python environment'
+                sh 'pip install --user -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                // Generate both HTML and XML reports for better utility.
+                sh 'python -m pytest tests/test_examples.py --html=reports/report.html --junitxml=results.xml'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive the test results: XML for Jenkins and HTML for user-viewable results
+            archiveArtifacts artifacts: 'reports/*.html'
+            junit 'results.xml'
+            echo 'Check the test results in the reports directory and JUnit panel.'
+        }
+        success {
+            echo 'Tests completed successfully. View HTML report for detailed test outputs.'
+        }
+        failure {
+            echo 'Tests failed. Check the console output and the HTML report for more information.'
+        }
+    }
+}
