@@ -9,7 +9,7 @@ pipeline {
         }
 
         stage('Install Requirements') {
-            steps { sh 'pip install -r requirements.txt'
+            steps { sh 'pip install -r requirements.txt --break-system-packages'
             }
         }
 
