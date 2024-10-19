@@ -1,26 +1,30 @@
 pipeline {
     agent any
-
+    environment {
+        // Define an environment variable to store the repository root
+        REPO_ROOT = "${WORKSPACE}"
+    }
     stages {
         stage('Checkout Code') {
             steps {
                 git url: 'https://github.com/e-makarenko/CI_CD_repository.git', branch: 'develop'
             }
         }
-
         stage('Install Requirements') {
-            steps { sh 'pip install -r requirements.txt --break-system-packages'
+            steps {
+                sh 'pip install -r requirements.txt --break-system-packages'
             }
         }
-
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                sh 'python3 tests/test_examples.py'
+                sh '''
+                export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
+                python3 tests/test_examples.py
+                '''
             }
         }
     }
-
     post {
         always {
             echo 'Pipeline execution is complete.'
