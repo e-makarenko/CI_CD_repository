@@ -19,7 +19,7 @@ def db_connection():
     password = db_config['password']
 
     # Connect to the database
-    connection = pymssql.connect(server=server, user=username, password=password, database=database)
+    connection = pymssql.connect(server=server, port='1433', user=username, password=password, database=database)
     yield connection
     connection.close()
 
