@@ -24,8 +24,13 @@ pipeline {
             steps {
                 script {
                     dir('CI_CD_repository') {
-                        sh './venv/bin/tests'
+                        // command corrected to activate venv and run pytest properly
+                        sh '''
+                        source venv/bin/activate
+                        pytest tests/test_examples.py -v
+                        '''
                     }
+                }
             }
         }
     }
@@ -42,5 +47,4 @@ pipeline {
             echo 'Tests failed. Check the console output for more information.'
         }
     }
-}
 }
