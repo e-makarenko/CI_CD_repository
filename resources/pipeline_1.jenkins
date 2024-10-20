@@ -15,7 +15,11 @@ pipeline {
                 script {
                     dir('CI_CD_repository') {
                         sh 'python3 -m venv venv'
-                        sh 'bash -c "source venv/bin/activate && pip install -r requirements.txt"'
+                        sh '''
+                        pwd
+                        ls -la
+                        source venv/bin/activate && pip install -r requirements.txt
+                        '''
                     }
                 }
             }
