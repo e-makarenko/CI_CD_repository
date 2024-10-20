@@ -3,6 +3,7 @@ pipeline {
     environment {
         // Define an environment variable to store the repository root
         REPO_ROOT = "${WORKSPACE}"
+        VENV_PATH = "${WORKSPACE}/venv"
     }
     stages {
         stage('Checkout Code') {
@@ -10,17 +11,23 @@ pipeline {
                 git url: 'https://github.com/e-makarenko/CI_CD_repository.git', branch: 'develop'
             }
         }
-        stage('Install Requirements') {
+        stage('Setup Environment') {
             steps {
-                sh 'pip install -r requirements.txt --break-system-packages'
+                // Creating a Python virtual environment in the repository root
+                sh "python3 -m venv ${VENV_PATH}"
+                // Installing dependencies from requirements.txt using the virtual environment's pip
+                sh "${VENV_PATH}/bin/pip install -r requirements.txt"
             }
         }
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
+                // Using the virtual environment's Python and setting PYTHONPATH before running pytest
                 sh '''
+                source ${VENV_PATH}/bin/activate
                 export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
                 pytest tests/test_examples.py -v
+                deactivate
                 '''
             }
         }
