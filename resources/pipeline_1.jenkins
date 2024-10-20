@@ -20,7 +20,7 @@ pipeline {
                 echo 'Running tests...'
                 sh '''
                 export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
-                pytest tests/test_examples.py -v
+                pytest tests/test_examples.py -v --junitxml=${REPO_ROOT}/test-results.xml
                 '''
             }
         }
@@ -28,12 +28,14 @@ pipeline {
     post {
         always {
             echo 'Pipeline execution is complete.'
+            archiveArtifacts artifacts: 'test-results.xml', onlyIfSuccessful: true
         }
         success {
             echo 'Tests ran successfully without any errors.'
+            junit 'test-results.xml'
         }
         failure {
-            echo 'Tests failed. Check the console output for more information.'
+            echo 'Tests failed. Check the console output and test results for more information.'
         }
     }
 }
