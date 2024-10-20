@@ -21,7 +21,7 @@ pipeline {
                 sh '''
                 export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
                 python3 tests/test_examples.py
-                ''', returnStdout: true
+                '''
             }
         }
     }
