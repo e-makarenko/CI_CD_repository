@@ -16,7 +16,10 @@ pipeline {
                     dir('CI_CD_repository') {
                         sh '''
                         python3 -m venv venv
-                        ./venv/bin/pip install -r requirements.txt
+                        source venv/bin/activate
+                        ls -la  # List files to debug
+                        pwd      # Show current directory for debugging
+                        pip install -r requirements.txt
                         '''
                     }
                 }
