@@ -1,6 +1,7 @@
 import pytest
-import pyodbc
+import pymssql
 from config.configs import get_yaml_config
+
 
 @pytest.fixture(scope="session")
 def db_connection():
@@ -12,19 +13,16 @@ def db_connection():
     db_config = get_yaml_config(config_name)
     print(db_config)
 
-    driver = db_config['driver']
     server = db_config['server']
     database = db_config['database']
     username = db_config['username']
     password = db_config['password']
-    connection_string = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=Yes;"
 
-    #print connection string for debugging purposes
-    print(f"Connection string to connect to the database is the following: {connection_string}")
-
-    connection = pyodbc.connect(connection_string)
+    # Connect to the database
+    connection = pymssql.connect(server=server, user=username, password=password, database=database)
     yield connection
     connection.close()
+
 
 @pytest.fixture(scope="function")
 def fetch_data(db_connection):

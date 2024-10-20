@@ -1,5 +1,5 @@
-driver: 'ODBC Driver 17 for SQL Server'
-server: 'localhost\SQLEXPRESS'
+#driver: 'ODBC Driver 17 for SQL Server'
+server: '127.0.0.1'
 database: TRN
 username: RF_user
 password: rfuser2000
