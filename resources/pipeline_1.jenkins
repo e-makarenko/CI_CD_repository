@@ -12,39 +12,22 @@ pipeline {
         }
         stage('Install Requirements') {
             steps {
-                script {
-                    dir('CI_CD_repository') {
-                        sh 'python3 -m venv venv'
-
-                        // Using Bash to source the environment and install dependencies
-                        sh '''
-                        echo "Activating virtual environment and installing requirements..."
-                        source venv/bin/activate
-                        pip install -r requirements.txt
-                        '''
-                    }
-                }
+                sh 'pip install -r requirements.txt --break-system-packages'
             }
         }
         stage('Run Tests') {
             steps {
-                script {
-                    dir('CI_CD_repository') {
-                        // command corrected to activate venv and run pytest properly
-                        sh '''
-                        source venv/bin/activate
-                        pytest tests/test_examples.py -v
-                        '''
-                    }
-                }
+                echo 'Running tests...'
+                sh '''
+                export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
+                pytest tests/test_examples.py -v
+                '''
             }
         }
     }
     post {
         always {
             echo 'Pipeline execution is complete.'
-            archiveArtifacts artifacts: '**/CI_CD_repository/reports/*.xml', allowEmptyArchive: true
-            junit '**/CI_CD_repository/reports/*.xml'
         }
         success {
             echo 'Tests ran successfully without any errors.'
