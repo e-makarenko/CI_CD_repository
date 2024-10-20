@@ -14,13 +14,8 @@ pipeline {
             steps {
                 script {
                     dir('CI_CD_repository') {
-                        sh '''
-                        python3 -m venv venv
-                        source venv/bin/activate
-                        ls -la  # List files to debug
-                        pwd      # Show current directory for debugging
-                        pip install -r requirements.txt
-                        '''
+                        sh 'python3 -m venv venv'
+                        sh 'bash -c "source venv/bin/activate && pip install -r requirements.txt"'
                     }
                 }
             }
