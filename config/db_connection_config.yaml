@@ -1,5 +1,5 @@
 #driver: 'ODBC Driver 17 for SQL Server'
-server: 'localhost'
+server: '192.168.0.37'
 database: TRN
 username: RF_user
 password: rfuser2000
