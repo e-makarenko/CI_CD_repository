@@ -15,7 +15,7 @@ pipeline {
                 script {
                     dir('CI_CD_repository') {
                         sh 'python3 -m venv venv'
-                        sh ''./venv/bin/pip install -r ${env.WORKSPACE}/requirements.txt'
+                        sh './venv/bin/pip install -r ${env.WORKSPACE}/requirements.txt'
                     }
                 }
             }
