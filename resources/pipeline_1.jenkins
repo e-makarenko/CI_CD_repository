@@ -1,8 +1,9 @@
 pipeline {
     agent any
     environment {
-        // Define an environment variable to store the repository root
         REPO_ROOT = "${WORKSPACE}"
+        REPORT_DIR = "reports"
+        REPORT_FILE = "report.html"
     }
     stages {
         stage('Checkout Code') {
@@ -12,28 +13,26 @@ pipeline {
         }
         stage('Install Requirements') {
             steps {
-                sh 'pip install -r requirements.txt --break-system-packages'
+                sh 'pip install -r requirements.txt'
             }
         }
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                sh '''
-                export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
-                python3 tests/test_examples.py
-                '''
+                sh script: """
+                    mkdir -p ${REPORT_DIR}
+                    pytest tests/test_examples.py
+                """, returnStdout: true
             }
         }
     }
     post {
         always {
             echo 'Pipeline execution is complete.'
-        }
-        success {
-            echo 'Tests ran successfully without any errors.'
-        }
-        failure {
-            echo 'Tests failed. Check the console output for more information.'
+            // Archive the HTML report
+            archiveArtifacts artifacts: "${REPORT_DIR}/${REPORT_FILE}", fingerprint: true
+            // Provide the link to the archived HTML report in the Jenkins UI
+            echo "View HTML test report at: ${env.JOB_URL}lastSuccessfulBuild/artifact/${REPORT_DIR}/${REPORT_FILE}"
         }
     }
-}
+}W
