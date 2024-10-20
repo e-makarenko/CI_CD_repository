@@ -20,7 +20,7 @@ pipeline {
                 echo 'Running tests...'
                 sh '''
                 export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
-                python3 tests/test_examples.py
+                pytest tests/test_examples.py -v
                 '''
             }
         }
