@@ -1,5 +1,5 @@
 #driver: 'ODBC Driver 17 for SQL Server'
-server: '127.0.0.1'
+server: 'host.docker.internal\SQLEXPRESS'
 database: TRN
 username: RF_user
 password: rfuser2000
