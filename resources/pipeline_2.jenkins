@@ -10,12 +10,14 @@ pipeline {
 
     stages {
         stage('Checkout Code') {
-            stage('Checkout Code') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/develop']],
-                  credentialsId: CREDENTIALS_ID, userRemoteConfigs: [[url: GIT_REPO]]])
+                checkout([
+                  $class: 'GitSCM',
+                  branches: [[name: 'refs/heads/develop']],
+                  credentialsId: CREDENTIALS_ID,
+                  userRemoteConfigs: [[url: GIT_REPO]]
+                ])
             }
-        }
         }
         stage('Install Requirements') {
             steps {
