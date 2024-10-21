@@ -53,7 +53,7 @@ pipeline {
                     sh "git merge origin/develop -m 'Merging develop into main following successful tests.'"
 
                     sh "git fetch --all"
-                    sh "git branch -a""
+                    sh "git branch -a"
 
                     // Push changes
                     sh "git push --verbose origin main"
