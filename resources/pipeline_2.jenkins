@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    // Environment variables can be configured here if needed
+    environment {
+        GIT_REPO = 'https://github.com/e-makarenko/CI_CD_repository.git'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Checkout from develop branch
+                git branch: 'develop', url: "${GIT_REPO}"
+            }
+        }
+
+        stage('Install Requirements') {
+            steps {
+                // Install python packages from requirements.txt
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                // Execute pytest and generate report
+                sh 'pytest test_examples.py --junitxml=pytest_results.xml'
+            }
+        }
+
+        stage('Merge to Main') {
+            // This stage will execute only if the 'Run Tests' stage is successful
+            steps {
+                // Checkout main branch, merge develop, and push changes
+                script {
+                    sh '''
+                    git checkout main
+                    git merge develop -m "Merging develop to main following successful tests"
+                    git push
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            // Optionally, add deployment commands to pre-production or production here
+            steps {
+                sh 'echo "Deploying application to the production environment..."'
+                // Include actual deployment commands here
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up actions, archiving artifacts, or sending notifications can be added here
+            echo 'Pipeline execution complete.'
+        }
+
+        success {
+            echo 'Pipeline executed successfully, changes are now live.'
+        }
+
+        failure {
+            echo 'Pipeline execution failed. Please check the logs.'
+        }
+    }
+}
