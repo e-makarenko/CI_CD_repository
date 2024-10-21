@@ -41,6 +41,18 @@ def test_country_ids_uniqueness(fetch_data):
 
 
 @pytest.mark.hr
+@pytest.mark.countries
+def test_country_id_completeness(fetch_data):
+    """
+    Test to verify that all entries in the country_id column of the [hr].[countries]
+    table are complete with no null or empty values.
+    """
+    query = "SELECT country_id FROM [hr].[countries]"
+    country_ids = [record[0] for record in fetch_data(query)]
+    assert check_for_completeness(country_ids), "Country IDs completeness check failed."
+
+
+@pytest.mark.hr
 @pytest.mark.regions
 def test_regions_name_allowed_values(fetch_data):
     """
