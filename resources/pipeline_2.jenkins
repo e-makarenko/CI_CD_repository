@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
+        // Ensure the repository URL is the HTTPS URL for using PAT
         GIT_REPO = 'https://github.com/e-makarenko/CI_CD_repository.git'
         REPO_ROOT = "${WORKSPACE}"
-        CREDENTIALS_ID = 'ci_cd_PAT'  // Ensure this is correctly configured in Jenkins.
+        CREDENTIALS_ID = 'github_pat' // Use the ID assigned when you saved the credential
     }
 
     stages {
@@ -13,7 +14,10 @@ pipeline {
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: 'refs/heads/develop']],
-                    userRemoteConfigs: [[url: GIT_REPO, credentialsId: CREDENTIALS_ID]]
+                    userRemoteConfigs: [[
+                        url: GIT_REPO,
+                        credentialsId: CREDENTIALS_ID
+                    ]]
                 ])
             }
         }
@@ -33,11 +37,13 @@ pipeline {
         stage('Merge to Main') {
             steps {
                 script {
-                    withCredentials([usernameColonPassword(credentialsId: CREDENTIALS_ID, variable: 'GIT_CREDENTIALS')]) {
+                    withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh '''
+                        git config --global user.email "you@example.com"
+                        git config --global user.name "Your Name"
                         git checkout main
                         git merge develop -m "Merging develop into main following successful tests."
-                        git push origin main -q
+                        git push origin main
                         '''
                     }
                 }
