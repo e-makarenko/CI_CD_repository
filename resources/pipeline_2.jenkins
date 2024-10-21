@@ -44,7 +44,7 @@ pipeline {
                         extensions: [],
                         submoduleCfg: [],
                         userRemoteConfigs: [[
-                            credentialsId: 'ci_cd_PAT',
+                            credentialsId: 'test-python',
                             url: "https://github.com/e-makarenko/CI_CD_repository.git"
                         ]]
                     ])
