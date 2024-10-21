@@ -22,7 +22,6 @@ pipeline {
                 sh 'pip install -r requirements.txt --break-system-packages'
             }
         }
-
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
@@ -32,21 +31,18 @@ pipeline {
                 '''
             }
         }
-
         stage('Merge to Main') {
-            // This stage will execute only if the 'Run Tests' stage is successful
             steps {
-                // Checkout main branch, merge develop, and push changes
                 script {
-                    sh '''
-                    git checkout main
-                    git merge develop -m "Merging develop to main following successful tests"
-                    git push --credentials '${CREDENTIALS_ID}'
-                    '''
+                    withCredentials([usernamePassword(credentialsId: '${CREDENTIALS_ID}', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        sh '''
+                        git checkout main
+                        git merge develop -m "Merging develop into main following successful tests."
+                        git push'''
+                    }
                 }
             }
         }
-
         stage('Deploy') {
             // Optionally, add deployment commands to pre-production or production here
             steps {
