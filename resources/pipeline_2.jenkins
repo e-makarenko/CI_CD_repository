@@ -37,7 +37,7 @@ pipeline {
                         sh '''
                         git checkout main
                         git merge develop -m "Merging develop into main following successful tests."
-                        git push ${GIT_REPO} main
+                        git push origin main
                         '''
                     }
                 }
