@@ -5,7 +5,7 @@ pipeline {
     environment {
         GIT_REPO = 'https://github.com/e-makarenko/CI_CD_repository.git'
         REPO_ROOT = "${WORKSPACE}"
-        CREDENTIALS_ID = '1'
+        CREDENTIALS_ID = 'ci_cd_PAT'
     }
 
     stages {
