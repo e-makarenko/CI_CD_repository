@@ -39,8 +39,11 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh '''
-                        git config --global user.email "you@example.com"
-                        git config --global user.name "Your Name"
+                        git config credential.username $USERNAME
+                        echo $PASSWORD | git credential approve
+                        git config --global user.email "emilia_makarenko@epam.com"
+                        git config --global user.name "e-makarenko"
+
                         git checkout main
                         git merge develop -m "Merging develop into main following successful tests."
                         git push origin main
