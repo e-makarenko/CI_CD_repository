@@ -4,6 +4,7 @@ pipeline {
     // Environment variables can be configured here if needed
     environment {
         GIT_REPO = 'https://github.com/e-makarenko/CI_CD_repository.git'
+        REPO_ROOT = "${WORKSPACE}"
     }
 
     stages {
@@ -17,7 +18,7 @@ pipeline {
         stage('Install Requirements') {
             steps {
                 // Install python packages from requirements.txt
-                sh 'pip install -r requirements.txt'
+                sh 'pip install -r requirements.txt --break-system-packages'
             }
         }
 
@@ -50,19 +51,17 @@ pipeline {
             }
         }
     }
-
     post {
         always {
-            // Clean up actions, archiving artifacts, or sending notifications can be added here
-            echo 'Pipeline execution complete.'
+            echo 'Pipeline execution is complete.'
+            archiveArtifacts artifacts: 'test-results.xml', onlyIfSuccessful: true
         }
-
         success {
-            echo 'Pipeline executed successfully, changes are now live.'
+            echo 'Pipeline ran successfully without any errors.'
+            junit 'test-results.xml'
         }
-
         failure {
-            echo 'Pipeline execution failed. Please check the logs.'
+            echo 'Pipeline failed. Check the console output for more information.'
         }
     }
 }
