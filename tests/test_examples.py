@@ -30,6 +30,18 @@ def test_country_id_max_length(fetch_data):
 
 @pytest.mark.hr
 @pytest.mark.regions
+def test_country_ids_uniqueness(fetch_data):
+    """
+    Test  to verify that each country_id from the [hr].[countries] table is unique,
+    there no duplicate IDs.
+    """
+    query = "SELECT country_id FROM [hr].[countries]"
+    countries_ids = [record[0] for record in fetch_data(query)]
+    assert check_uniqueness(countries_ids), "Country ID uniqueness check failed."
+
+
+@pytest.mark.hr
+@pytest.mark.regions
 def test_regions_name_allowed_values(fetch_data):
     """
     Test to verify all region_name entries from the [hr].[regions] table are limited to specific allowed
