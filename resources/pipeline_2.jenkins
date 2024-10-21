@@ -37,18 +37,23 @@ pipeline {
         stage('Merge to Main') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh '''
-                        git config credential.username $USERNAME
-                        echo $PASSWORD | git credential approve
-                        git config --global user.email "emilia_makarenko@epam.com"
-                        git config --global user.name "e-makarenko"
+                    // Checkout the main branch
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: 'main']],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[
+                            credentialsId: 'ci_cd_PAT',
+                            url: "https://github.com/e-makarenko/CI_CD_repository.git"
+                        ]]
+                    ])
 
-                        git checkout main
-                        git merge develop -m "Merging develop into main following successful tests."
-                        git push origin main
-                        '''
-                    }
+                    // Merge develop into main
+                    sh "git merge origin/develop -m 'Merging develop into main following successful tests.'"
+
+                    // Push changes
+                    sh "git push origin main"
                 }
             }
         }
