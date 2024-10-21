@@ -5,7 +5,7 @@ pipeline {
         // Ensure the repository URL is the HTTPS URL for using PAT
         GIT_REPO = 'https://github.com/e-makarenko/CI_CD_repository.git'
         REPO_ROOT = "${WORKSPACE}"
-        CREDENTIALS_ID = 'github_pat' // Use the ID assigned when you saved the credential
+        CREDENTIALS_ID = 'ci_cd_PAT'
     }
 
     stages {
