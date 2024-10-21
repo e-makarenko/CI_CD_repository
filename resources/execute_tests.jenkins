@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    environment {
+        // Define an environment variable to store the repository root
+        REPO_ROOT = "${WORKSPACE}"
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: 'https://github.com/e-makarenko/CI_CD_repository.git', branch: 'develop'
+            }
+        }
+        stage('Install Requirements') {
+            steps {
+                sh 'pip install -r requirements.txt --break-system-packages'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                sh '''
+                export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
+                pytest tests/test_examples.py -v --junitxml=${REPO_ROOT}/test-results.xml
+                '''
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline execution is complete.'
+            archiveArtifacts artifacts: 'test-results.xml', onlyIfSuccessful: true
+        }
+        success {
+            echo 'Tests ran successfully without any errors.'
+            junit 'test-results.xml'
+        }
+        failure {
+            echo 'Tests failed. Check the console output and test results for more information.'
+        }
+    }
+}

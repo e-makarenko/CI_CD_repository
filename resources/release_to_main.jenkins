@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        // Ensure the repository URL is the HTTPS URL for using PAT
+        GIT_REPO = 'https://github.com/e-makarenko/CI_CD_repository.git'
+        REPO_ROOT = "${WORKSPACE}"
+        CREDENTIALS_ID = 'test-python'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'refs/heads/develop']],
+                    userRemoteConfigs: [[
+                        url: GIT_REPO,
+                        credentialsId: CREDENTIALS_ID
+                    ]]
+                ])
+            }
+        }
+        stage('Install Requirements') {
+            steps {
+                sh 'pip install -r requirements.txt --break-system-packages'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh '''
+                export PYTHONPATH=${REPO_ROOT}:${PYTHONPATH}
+                pytest tests/test_examples.py -v --junitxml=${REPO_ROOT}/test-results.xml
+                '''
+            }
+        }
+        stage('Merge to Main') {
+            steps {
+                script {
+                    // Checkout the main branch
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: 'main']],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[
+                            credentialsId: 'test-python',
+                            url: "https://github.com/e-makarenko/CI_CD_repository.git"
+                        ]]
+                    ])
+
+                    // Merge develop into main
+                    sh "git merge origin/develop -m 'Merging develop into main following successful tests.'"
+
+                    sh "git fetch --all"
+                    sh "git branch -a"
+
+                    // Push changes
+                    sh "git push --verbose origin main"
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'echo "Deploying application to the production environment..."'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline execution is complete.'
+            archiveArtifacts artifacts: 'test-results.xml', onlyIfSuccessful: true
+        }
+        success {
+            junit 'test-results.xml'
+            echo 'Pipeline ran successfully without any errors.'
+        }
+        failure {
+            echo 'Pipeline failed. Check the console output for more information.'
+        }
+    }
+}
