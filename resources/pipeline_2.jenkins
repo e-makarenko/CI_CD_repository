@@ -16,7 +16,7 @@ pipeline {
                   credentialsId: CREDENTIALS_ID, userRemoteConfigs: [[url: GIT_REPO]]])
             }
         }
-
+        }
         stage('Install Requirements') {
             steps {
                 // Install python packages from requirements.txt
